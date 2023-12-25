@@ -1,21 +1,18 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <cctype>
-#include <codecvt>
 #include <vector>
+#include <string>
 #include <map>
-#include <algorithm>
-#include <locale>
-using namespace std;
-
 class modAlphaCipher
 {
 private:
-    int newkey; // количество столбцов таблицы
+    std::wstring numAlpha = L"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"; 
+    std::map <char,int> alphaNum; 
+    std::vector <int> key; //ключ
+    std::vector<int> convert(const std::wstring& s);
+    std::wstring convert(const std::vector<int>& v);
 public:
     modAlphaCipher()=delete;
-    modAlphaCipher(const int& key) :newkey(key) {}; // конструктор
-    string encrypt(const string& open_st); // зашифрование
-    string decrypt(const string& cipher_st); // расшифрование
+    modAlphaCipher(const std::wstring& skey); 
+    std::wstring encrypt(const std::wstring& open_text);
+    std::wstring decrypt(const std::wstring&cipher_text);
 };

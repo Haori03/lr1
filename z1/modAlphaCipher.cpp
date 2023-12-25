@@ -1,38 +1,40 @@
 #include "modAlphaCipher.h"
-
-string modAlphaCipher::encrypt(const string& open_st) // ЗАШИФРОВАНИЕ
+modAlphaCipher::modAlphaCipher(const std::wstring& skey)
 {
-    string n_s = open_st;
-    int len, nstrok, position, a; // len-длина строки ; nstrok-количество строк ; position-новая позиция символа, который меняем ;
-    len = open_st.size(); // st-строка с текстом, который вводится пользователем
-    nstrok = (len - 1) / newkey + 1; //newkey-количество столбцов в таблице
-    a = 0;
-    for (int colum_number = newkey; colum_number > 0; colum_number--) { // colum_number-номер столбца
-        for (int line_number = 0; line_number < nstrok; line_number++) { // line_number-номер строки
-            position = colum_number+newkey*line_number;
-            if (position-1 < len) {
-                n_s[a] = open_st[position-1];
-                a++;
-            }
-        }
+    for (unsigned i=0; i<numAlpha.size(); i++) {
+        alphaNum[numAlpha[i]]=i;
     }
-    return n_s;
+    key = convert(skey);
 }
-string modAlphaCipher::decrypt(const std::string& cipher_st) // РАСШИФРОВАНИЕ
+std::wstring modAlphaCipher::encrypt(const std::wstring& open_text)
 {
-    string n_s = cipher_st;
-    int len, nstrok, position, a; // len-длина строки ; nstrok-количество строк ; position-новая позиция символа, который меняем ;
-    len = cipher_st.size(); // st-строка с текстом, который вводится пользователем
-    nstrok = (len - 1) / newkey + 1; // newkey-количество столбцов в таблице
-    a = 0;
-    for (int colum_number = newkey; colum_number > 0; colum_number--) { // colum_number-номер столбца
-        for (int line_number = 0; line_number < nstrok; line_number++) { // line_number-номер строки
-            position = newkey*line_number+colum_number; //
-            if (position-1 < len) {
-                n_s[position-1] = cipher_st[a];
-                a++;
-            }
-        }
+    std::vector<int> work = convert(open_text);
+    for(unsigned i=0; i < work.size(); i++) {
+        work[i] = (work[i] + key[i % key.size()]) % alphaNum.size();
     }
-    return n_s;
+    return convert(work);
+}
+std::wstring modAlphaCipher::decrypt(const std::wstring& cipher_text)
+{
+    std::vector<int> work = convert(cipher_text);
+    for(unsigned i=0; i < work.size(); i++) {
+        work[i] = (work[i] + alphaNum.size() - key[i % key.size()]) % alphaNum.size();
+    }
+    return convert(work);
+}
+inline std::vector<int> modAlphaCipher::convert(const std::wstring& s)
+{
+    std::vector<int> result;
+    for(auto c: s) {
+        result.push_back(alphaNum[c]);
+    }
+    return result;
+}
+inline std::wstring modAlphaCipher::convert(const std::vector<int>& v)
+{
+    std::wstring result;
+    for(auto i:v) {
+        result.push_back(numAlpha[i]);
+    }
+    return result;
 }

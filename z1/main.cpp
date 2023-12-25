@@ -1,44 +1,49 @@
+#include <iostream>
+#include <cctype>
 #include "modAlphaCipher.h"
-
-bool isValid(const string& s)
+using namespace std;
+bool isValid(const wstring& s)
 {
-    for(auto c:s)
-        if (!isalpha(c)||!isupper(c))
+    locale loc("ru_RU.UTF-8");
+    locale::global(loc);
+    for(auto c: s)
+        if (!isalpha(c, loc) || !isupper(c, loc))
             return false;
     return true;
 }
 int main(int argc, char **argv)
 {
-    int key;
-    string st;
+    locale loc("ru_RU.UTF-8");
+    locale::global(loc);
+    wstring key;
+    wstring text;
     unsigned op;
-    cout<<"ВВЕДИТЕ КЛЮЧ (ЧИСЛО) : ";
-    cin>>key;
-    if (!cin.good()) {
-        clog<<"КЛЮЧ НЕ ПОДХОДИТ\n";
+    wcout<<"Cipher ready. Input key: ";
+    wcin>>key;
+    if (!isValid(key)) {
+        cerr<<"key not valid\n";
         return 1;
     }
-    cout<<"КЛЮЧ ПРИНЯТ\n";
+    wcout<<"Key loaded\n";
     modAlphaCipher cipher(key);
     do {
-        cout<<"ВЫБЕРИТЕ ОПЕРАЦИЮ (0-ВЫХОД, 1-ЗАШИФРОВАТЬ, 2-РАСШИФРОВАТЬ): ";
-        cin>>op;
+        wcout<<"Cipher ready. Input operation (0-exit, 1-encrypt, 2-decrypt): ";
+        wcin>>op;
         if (op > 2) {
-            cout<<"ОШИБКА В ВЫБОРЕ ОПЕРАЦИИ\n";
+            wcout<<"Illegal operation\n";
         } else if (op >0) {
-            cout<<"ВВЕДИТЕ СТРОКУ, СОСТОЯЩУЮ ИЗ ЛАТИНИЦЫ : ";
-            cin>>st;
-            if (isValid(st)) {
+            wcout<<"Cipher ready. Input text: ";
+            wcin>>text;
+            if (isValid(text)) {
                 if (op==1) {
-                    cout<<"ЗАШИФРОВАННАЯ СТРОКА: " << cipher.encrypt(st) << endl;
+                    wcout<<"Encrypted text: "<<cipher.encrypt(text)<<endl;
                 } else {
-                    cout<<"РАСШИФРОВАННАЯ СТРОКА: " << cipher.decrypt(st) << endl;
+                    wcout<<"Decrypted text: "<<cipher.decrypt(text)<<endl;
                 }
             } else {
-                cout<<"НЕКОРРЕКТНАЯ СТРОКА.\n";
+                wcout<<"Operation aborted: invalid text\n";
             }
         }
     } while (op!=0);
-
     return 0;
 }

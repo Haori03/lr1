@@ -1,38 +1,29 @@
-#include "modAlphaCipher.h"
+#include "cipher.h"
 
-string modAlphaCipher::encrypt(const string& open_st) // ЗАШИФРОВАНИЕ
-{
-    string n_s = open_st;
-    int len, nstrok, position, a; // len-длина строки ; nstrok-количество строк ; position-новая позиция символа, который меняем ;
-    len = open_st.size(); // st-строка с текстом, который вводится пользователем
-    nstrok = (len - 1) / newkey + 1; //newkey-количество столбцов в таблице
-    a = 0;
-    for (int colum_number = newkey; colum_number > 0; colum_number--) { // colum_number-номер столбца
-        for (int line_number = 0; line_number < nstrok; line_number++) { // line_number-номер строки
-            position = colum_number+newkey*line_number;
-            if (position-1 < len) {
-                n_s[a] = open_st[position-1];
-                a++;
-            }
+std::string Cipher::encrypt(std::string text) {
+    std::string buff;
+    int key_1 = key_;
+    while (text.size() % key_ != 0)
+        text.push_back('*');
+    for (int i = 0; i < key_; i++) {
+        for (int x = 0; x < (text.size() / key_); x++) {
+            buff.push_back(text[key_1 - 1]);
+            key_1 += key_;
         }
+        key_1 = key_ - i - 1;
     }
-    return n_s;
+    return buff;
 }
-string modAlphaCipher::decrypt(const std::string& cipher_st) // РАСШИФРОВАНИЕ
-{
-    string n_s = cipher_st;
-    int len, nstrok, position, a; // len-длина строки ; nstrok-количество строк ; position-новая позиция символа, который меняем ;
-    len = cipher_st.size(); // st-строка с текстом, который вводится пользователем
-    nstrok = (len - 1) / newkey + 1; // newkey-количество столбцов в таблице
-    a = 0;
-    for (int colum_number = newkey; colum_number > 0; colum_number--) { // colum_number-номер столбца
-        for (int line_number = 0; line_number < nstrok; line_number++) { // line_number-номер строки
-            position = newkey*line_number+colum_number; //
-            if (position-1 < len) {
-                n_s[position-1] = cipher_st[a];
-                a++;
-            }
+
+std::string Cipher::decrypt(std::string text) {
+    std::string buff;
+    int rows = text.size() / key_;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < key_; j++) {
+            int index = (key_ - j - 1) * rows + i;
+            buff.push_back(text[index]);
         }
     }
-    return n_s;
+    buff.erase(std::remove(buff.begin(), buff.end(), '*'), buff.end());
+    return buff;
 }
